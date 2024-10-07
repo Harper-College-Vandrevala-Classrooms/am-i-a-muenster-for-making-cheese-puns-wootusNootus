@@ -4,7 +4,19 @@ import java.io.*;
 
 public class CheeseAnalyzer 
 {
-  public static void main(String[] args){
+  // Criteria
+  public static int countPasteurized;
+  public static int countRaw;
+  public static int organicAndMoist;
+  // Most cheesed animal
+  public static int goat;
+  public static int cow;
+  public static int ewe;
+  public static int buffalo;
+
+  public static void main(String[] args)
+  {
+
   }
 
   public static void readFile(String fileName, ArrayList<String> data){
@@ -60,6 +72,31 @@ public class CheeseAnalyzer
 
   public static void analyzeLine(ArrayList<String> data)
   {
+    // Pasteurized vs raw
+    if( Character.toLowerCase(data.get(10).charAt(0)) == 'r' ) { countRaw++; }
+    if( Character.toLowerCase(data.get(10).charAt(0)) == 'p' ) { countPasteurized++; }
 
+    // Organic + moisture > 41.0%
+    if( (data.get(7) == "1") && (Double.parseDouble(data.get(4))) > 41.0) { organicAndMoist++; }
+
+    // Type of animal milk
+    String animal = data.get(9).toLowerCase();
+
+    switch (animal) {
+      case "goat":
+          goat++;
+          break;
+      case "cow":
+          cow++;
+          break;
+      case "ewe":
+          ewe++;
+          break;
+      case "buffalo":
+          buffalo++;
+          break;
+      default:
+          break;
+    }
   }
 }
