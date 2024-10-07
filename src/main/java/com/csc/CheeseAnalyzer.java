@@ -16,10 +16,50 @@ public class CheeseAnalyzer
 
   public static void main(String[] args)
   {
+    System.out.println("Ready to analyze data from Cheese file");
+
+    readFile("cheese_data.csv");
+    writeFile("output.txt");
+
+    System.out.println("Thank for using the Cheese Analyzer Program");
+  }
+
+  public static void writeFile(String filename){
+    try{
+      FileWriter fw = new FileWriter(filename);
+      PrintWriter pw = new PrintWriter(fw);
+      
+      pw.println("Number of cheeses that use pasteurized milk: " + countPasteurized + " cheeses");
+      pw.println("Number of cheeses that use raw milk: " + countRaw + " cheeses");
+      pw.println("Number of cheeses that are organic and have a moisture percentage greater than 41.0%: " + organicAndMoist + " cheeses");
+
+      int winner = cow;
+      
+      if(goat > winner) {
+        pw.println("Most cheeses come from a goat.");
+        winner = goat;
+      }
+      else if (ewe > winner) {
+        pw.println("Most cheeses come from a ewe.");
+        winner = ewe;
+      }
+      else if (buffalo > winner){
+        pw.println("Most cheeses come from a buffalo.");
+      }
+      else {
+        pw.println("Most cheeses come from a pig.");
+      }
+
+      System.out.println("Succesfully analyzed data to new file " + filename);
+      pw.close();
+    }
+    catch(IOException e){
+      System.out.println("Error - Cannot write to file " + filename);
+    }
 
   }
 
-  public static void readFile(String fileName, ArrayList<String> data){
+  public static void readFile(String fileName){
     try{
       FileReader fr = new FileReader(fileName);
       BufferedReader br = new BufferedReader(fr);
@@ -72,12 +112,16 @@ public class CheeseAnalyzer
 
   public static void analyzeLine(ArrayList<String> data)
   {
-    // Pasteurized vs raw
-    if( Character.toLowerCase(data.get(10).charAt(0)) == 'r' ) { countRaw++; }
-    if( Character.toLowerCase(data.get(10).charAt(0)) == 'p' ) { countPasteurized++; }
+    // Fixing null values for analysis
+    if( data.get(7).equals("NULL") ) { data.set(7, "-1"); }
+    if( data.get(4).equals("NULL") ) { data.set(4, "0.0"); }
 
-    // Organic + moisture > 41.0%
-    if( (data.get(7) == "1") && (Double.parseDouble(data.get(4))) > 41.0) { organicAndMoist++; }
+    // Pasteurized vs raw
+    if( data.get(10).equalsIgnoreCase("Raw Milk") ) { countRaw++; }
+    if( data.get(10).equalsIgnoreCase("Pasteurized") ) { countPasteurized++; }
+
+    // Organic + moisture > 41.0% (.matches function fixes Number Format Exception Error)
+    if( (data.get(7).matches("-?\\d+") && Integer.parseInt(data.get(7)) == 1) && ((Double.parseDouble(data.get(4))) > 41.0) ) { organicAndMoist++; }
 
     // Type of animal milk
     String animal = data.get(9).toLowerCase();
