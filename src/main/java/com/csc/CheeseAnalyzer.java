@@ -8,11 +8,14 @@ public class CheeseAnalyzer
   public static int countPasteurized;
   public static int countRaw;
   public static int organicAndMoist;
+  public static double totalMoisture;
+  public static int moistureCount;
   // Most cheesed animal
   public static int goat;
   public static int cow;
   public static int ewe;
   public static int buffalo;
+  
 
   public static void main(String[] args)
   {
@@ -20,6 +23,7 @@ public class CheeseAnalyzer
 
     readFile("cheese_data.csv");
     writeFile("output.txt");
+    removeHeadersAndIds("cheese_data.csv", "cheese_without_headers_and_ids.csv");
 
     System.out.println("Thank for using the Cheese Analyzer Program");
   }
@@ -33,8 +37,10 @@ public class CheeseAnalyzer
       pw.println("Number of cheeses that use raw milk: " + countRaw + " cheeses");
       pw.println("Number of cheeses that are organic and have a moisture percentage greater than 41.0%: " + organicAndMoist + " cheeses");
 
+      double averageMoisture = totalMoisture / moistureCount;
+      pw.println("Average moisture percentage of all cheeses: " + (Math.round(averageMoisture * 100.0) / 100.0));
+
       int winner = cow;
-      
       if(goat > winner) {
         pw.println("Most cheeses come from a goat.");
         winner = goat;
@@ -47,7 +53,7 @@ public class CheeseAnalyzer
         pw.println("Most cheeses come from a buffalo.");
       }
       else {
-        pw.println("Most cheeses come from a pig.");
+        pw.println("Most cheeses come from a cow.");
       }
 
       System.out.println("Succesfully analyzed data to new file " + filename);
@@ -64,6 +70,8 @@ public class CheeseAnalyzer
       FileReader fr = new FileReader(fileName);
       BufferedReader br = new BufferedReader(fr);
       String line;
+
+      line = br.readLine(); // Skipping the header during analysis
 
       while((line = br.readLine()) != null){
         analyzeLine(formulateLine(line));
@@ -141,6 +149,48 @@ public class CheeseAnalyzer
           break;
       default:
           break;
+    }
+
+    // Calculate total moisture for averaging
+    if (!data.get(4).equals("0.0")) {
+      totalMoisture += Double.parseDouble(data.get(4));
+      moistureCount++;
+    }
+  }
+
+  public static void removeHeadersAndIds(String inputFile, String outputFile) {
+    try {
+      // Setting up read file
+      FileReader fr = new FileReader(inputFile);
+      BufferedReader br = new BufferedReader(fr);
+
+      // Setting up write file
+      FileWriter fw = new FileWriter(outputFile);
+      PrintWriter pw = new PrintWriter(fw);
+
+      String line;
+      boolean isHeader = true;
+
+      while ((line = br.readLine()) != null) {
+        // Skipping the first line
+        if (isHeader) {
+          isHeader = false; // Anything after first line will not be header
+        } 
+        else {
+          // Removing the first column
+          String[] splitLine = line.split(",", 2);
+          if (splitLine.length > 1) {
+            pw.println(splitLine[1].trim()); 
+          }
+        }
+      }
+
+      System.out.println("Successfully created file without headers and IDs: " + outputFile);
+      br.close();
+      pw.close();
+    } 
+    catch (IOException e) {
+      System.out.println("Error - Cannot create file " + outputFile);
     }
   }
 }

@@ -1,4 +1,5 @@
 Number of cheeses that use pasteurized milk: 723 cheeses
 Number of cheeses that use raw milk: 106 cheeses
 Number of cheeses that are organic and have a moisture percentage greater than 41.0%: 43 cheeses
-Most cheeses come from a pig.
+Average moisture percentage of all cheeses: 47.07
+Most cheeses come from a cow.
